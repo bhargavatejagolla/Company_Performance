@@ -340,7 +340,7 @@ This SQL project demonstrates how to build and query a multi-table relational da
 
 This project is ideal for learners who want to practice real-world SQL skills while exploring business and economic datasets.
 
----## How to Use
+## How to Use
 
 1. **Clone the Repository**: Download or clone this repo.
 2. **Set Up the Database**: Execute the provided SQL scripts in your local MySQL or PostgreSQL environment.
