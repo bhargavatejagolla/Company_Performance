@@ -45,11 +45,18 @@ The project creates the following tables:
 ##  Sample Analysis Queries
 
 ###  Identify high-risk vs low-risk companies
-
+```sql
 SELECT Company_Name,
   CASE
     WHEN Growth_Percent < 0 THEN 'High Risk'
     ELSE 'Low Risk'
   END AS Risk_Category
-FROM Company_Information;
- Sectors with most recession-free companies
+FROM Company_Information; 
+ ###Sectors with most recession-free companies
+```sql
+SELECT Sector, COUNT(*) AS Recession_Free_Companies
+FROM Company_Information
+WHERE Growth_Percent >= 0
+GROUP BY Sector;
+
+  
