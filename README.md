@@ -1,28 +1,55 @@
-Company Performance Analysis SQL Project
-Project Overview
-Project Title: Company Performance Analysis
-Level: Intermediate
-Database: ironman
+# Company Performance & Risk Analysis SQL Project
 
-This project aims to analyze the financial performance and growth of companies across different sectors and countries using SQL. The data includes quarterly results, company size, sector impact factors, and economic influences like COVID-19 and crude oil price effects. This project is designed for data analysts who want to deepen their SQL skills by working on real-world business data analysis.
+##  Project Overview
 
-Objectives
-Create and populate a company database: Set up tables containing company details, sectors, headquarters, workforce sizes, and performance metrics.
+**Project Title**: Company Performance & Risk Analysis  
+**Level**: Beginner to Intermediate  
+**Database**: `ironman`
 
-Explore company financial and growth data: Analyze quarterly results, estimated and last year growth, and performance ratings.
+This project simulates a real-world scenario where data analysts work with interrelated company data such as performance results, sector effects, workforce demographics, and macroeconomic indicators. It involves creating a relational database, writing complex SQL queries, and deriving insights that support business intelligence and economic strategy.
 
-Investigate sector and country-level effects: Examine how factors like COVID-19 and crude oil prices affect company sectors.
+---
 
-Answer business questions: Use SQL queries to extract insights into company performance, sector trends, and economic impacts.
+##  Objectives
 
-Project Structure
-1. Database Schema & Setup
-Company Information Table: Holds company IDs, names, quarterly financial results, growth percentages, sector IDs, size IDs, and headquarters location IDs.
+1. **Database Setup**: Create and populate normalized tables to store company information, sector attributes, workforce stats, performance grading, and headquarters data.
+2. **Data Analysis**: Use advanced SQL queries (JOINs, CTEs, aggregates, conditional logic) to analyze company growth and risk.
+3. **Business Insight Generation**: Identify high-growth sectors, low-risk companies, and evaluate the effects of external economic factors.
 
-Company Sector Table: Contains sector details along with the impact of COVID-19 and crude oil prices on each sector.
+---
 
-Company Workforce Table: Provides data about the size of companies and the number of employees.
+##  Project Structure
 
-Company Headquarters Table: Contains company headquarters countries and their inflation rates.
+### 1. Database Schema
 
-Company Performance Table: Performance grades classifying company or sector performance.
+The project creates the following tables:
+- `Company_Information`: Core company metrics including quarterly results and growth.
+- `Company_Sector`: Sector names, performance IDs, and economic impact indicators.
+- `Company_Performance`: Performance ratings.
+- `Company_Workforce`: Workforce size and gender ratios.
+- `Company_HeadQuarter`: Headquarter countries and inflation rates.
+
+### 2. Key SQL Operations
+
+- Counting companies by sector with negative growth.
+- Aggregating company counts by headquarter country.
+- Identifying companies with positive growth in "Very Large" size.
+- Assigning risk categories based on growth percent.
+- Ranking sectors by estimated growth.
+- Tagging sectors by inflation impact.
+- Filtering IT/Defence companies by estimated growth.
+- Correlating performance with COVID/crude oil effects.
+
+---
+
+##  Sample Analysis Queries
+
+###  Identify high-risk vs low-risk companies
+```sql
+SELECT Company_Name,
+  CASE
+    WHEN Growth_Percent < 0 THEN 'High Risk'
+    ELSE 'Low Risk'
+  END AS Risk_Category
+FROM Company_Information;
+ Sectors with most recession-free companies
