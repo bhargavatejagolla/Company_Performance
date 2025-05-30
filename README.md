@@ -51,8 +51,10 @@ SELECT Company_Name,
     WHEN Growth_Percent < 0 THEN 'High Risk'
     ELSE 'Low Risk'
   END AS Risk_Category
-FROM Company_Information; 
- ###Sectors with most recession-free companies
+FROM Company_Information;
+```
+
+ ### Sectors with most recession-free companies
 ```sql
 SELECT Sector, COUNT(*) AS Recession_Free_Companies
 FROM Company_Information
