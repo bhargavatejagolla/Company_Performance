@@ -45,7 +45,7 @@ The project creates the following tables:
 ##  Sample Analysis Queries
 
 ###  Identify high-risk vs low-risk companies
-```sql
+
 SELECT Company_Name,
   CASE
     WHEN Growth_Percent < 0 THEN 'High Risk'
