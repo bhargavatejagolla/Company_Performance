@@ -1,6 +1,3 @@
-# Company Performance and Risk Analysis SQL Project
-
-##  Project Overview
 # Company Performance & Risk Analysis SQL Project
 
 ## Project Overview
