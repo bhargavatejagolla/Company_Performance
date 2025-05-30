@@ -1,6 +1,212 @@
 # Company Performance and Risk Analysis SQL Project
 
 ##  Project Overview
+# Company Performance & Risk Analysis SQL Project
+
+## Project Overview
+
+**Project Title**: Company Performance & Risk Analysis  
+**Level**: Beginner to Intermediate  
+**Database**: `ironman`
+
+This project is designed to demonstrate SQL skills to explore, analyze, and interpret company performance data. It includes setup of a relational schema and writing business-focused SQL queries to classify risk, measure growth, and evaluate economic impact.
+
+## Objectives
+
+1. **Set up a company analysis database**: Create and populate a relational schema.
+2. **Data Analysis**: Explore performance, growth, sector impact, and macroeconomic indicators.
+3. **Business Insight Generation**: Use SQL to identify growth trends and high-risk sectors.
+
+## Project Structure
+
+### 1. Database Setup
+
+```sql
+USE ironman;
+
+-- Drop and create main data tables
+DROP TABLE IF EXISTS Company_Information;
+CREATE TABLE Company_Information (
+    Company_id INT PRIMARY KEY,
+    Company_Name VARCHAR(255),
+    Q1_Result INT,
+    Q2_Result INT,
+    Q3_Result INT,
+    Q4_Result INT,
+    Company_Size_id INT,
+    Sector INT,
+    Estimated_Growth DECIMAL(3,1),
+    Last_Year_Growth DECIMAL(3,1),
+    Company_HQ_id INT,
+    Growth_Percent DECIMAL(3,1)
+);
+
+-- Insert sample data (partial rows shown)
+INSERT INTO Company_Information VALUES
+(1, 'Infosys', 9800, 7506, 8802, 5076, 5, 1, 6.9, 8.1, 1, -1.2),
+(2, 'Wipro', 5080, 6210, 4500, 4230, 5, 1, 6.1, 7.3, 1, -1.2);
+```
+
+```sql
+-- Sectors
+DROP TABLE IF EXISTS Company_Sector;
+CREATE TABLE Company_Sector (
+    Sector_ID INT PRIMARY KEY,
+    Sector_Name VARCHAR(255),
+    Performance_ID INT,
+    Effect_of_Covid VARCHAR(3),
+    Effect_of_CrudePrice VARCHAR(3)
+);
+INSERT INTO Company_Sector VALUES
+(1, 'IT', 2, 'YES', 'NO');
+```
+
+```sql
+-- Performance Grades
+DROP TABLE IF EXISTS Company_Performance;
+CREATE TABLE Company_Performance (
+    Performance_id INT PRIMARY KEY,
+    Performance_Grade VARCHAR(10)
+);
+INSERT INTO Company_Performance VALUES (1, 'Poor'), (2, 'Good');
+```
+
+```sql
+-- Workforce Data
+DROP TABLE IF EXISTS Company_Workforce;
+CREATE TABLE Company_Workforce (
+    Company_id INT PRIMARY KEY,
+    Company_Size VARCHAR(20),
+    Workforce_Strength VARCHAR(50),
+    Male_per INT,
+    Female_per INT
+);
+INSERT INTO Company_Workforce VALUES
+(1, 'Very Small', '< 200', 40, 60);
+```
+
+```sql
+-- Headquarters
+DROP TABLE IF EXISTS Company_HeadQuarter;
+CREATE TABLE Company_HeadQuarter (
+    Nation_id INT PRIMARY KEY,
+    HeadQuarters VARCHAR(50),
+    Inflation DECIMAL(4,2)
+);
+INSERT INTO Company_HeadQuarter VALUES (1, 'India', 5.56);
+```
+
+### 2. Business Analysis Queries
+
+#### Identify high-risk vs low-risk companies
+```sql
+SELECT Company_Name,
+  CASE
+    WHEN Growth_Percent < 0 THEN 'High Risk'
+    ELSE 'Low Risk'
+  END AS Risk_Category
+FROM Company_Information;
+```
+
+#### Sectors with recession-free companies
+```sql
+SELECT Sector, COUNT(*) AS Recession_Free_Companies
+FROM Company_Information
+WHERE Growth_Percent >= 0
+GROUP BY Sector;
+```
+
+#### Companies with Q4 earnings < average of all quarters
+```sql
+SELECT Company_Name, Sector,
+       ((Q1_Result + Q2_Result + Q3_Result + Q4_Result) / 4) AS Average
+FROM Company_Information
+WHERE ((Q1_Result + Q2_Result + Q3_Result + Q4_Result) / 4) > Q4_Result;
+```
+
+#### Highest estimated growth per sector
+```sql
+SELECT Sector, MAX(Estimated_Growth) AS Highest_Estimated_Growth
+FROM Company_Information
+GROUP BY Sector
+ORDER BY Highest_Estimated_Growth DESC;
+```
+
+#### Sector growth summary
+```sql
+SELECT cs.Sector_Name, SUM(ci.Growth_Percent) AS Total_Growth
+FROM Company_Information ci
+JOIN Company_Sector cs ON ci.Sector = cs.Sector_id
+GROUP BY cs.Sector_Name
+ORDER BY Total_Growth DESC;
+```
+
+#### Sector performance without crude impact
+```sql
+SELECT cs.Sector_Name, cp.Performance_Grade
+FROM Company_Sector cs
+JOIN Company_Performance cp ON cs.Performance_Id = cp.Performance_id
+WHERE cs.Effect_of_CrudePrice = 'NO';
+```
+
+#### Companies in low-inflation countries with positive growth
+```sql
+SELECT ci.Company_Name, cs.Sector_Name
+FROM Company_Information ci
+JOIN Company_Sector cs ON ci.Sector = cs.Sector_id
+JOIN Company_HeadQuarter ch ON ci.Company_HQ_Id = ch.Nation_id
+WHERE ch.Inflation < (SELECT AVG(Inflation) FROM Company_HeadQuarter)
+  AND ci.Growth_Percent >= 0;
+```
+
+#### Sector inflation comparison
+```sql
+SELECT cs.Sector_Name,
+       CASE 
+           WHEN SUM(CASE WHEN ch.Inflation > 3 THEN 1 ELSE 0 END) > SUM(CASE WHEN ch.Inflation <= 3 THEN 1 ELSE 0 END)
+           THEN 'Greater inflation'
+           ELSE 'Lesser inflation'
+       END AS Inflation_Comparison
+FROM Company_HeadQuarter ch
+JOIN Company_Information ci ON ch.Nation_id = ci.Company_HQ_Id
+JOIN Company_Sector cs ON ci.Sector = cs.Sector_id
+GROUP BY cs.Sector_Name
+ORDER BY cs.Sector_Name;
+```
+
+#### High-growth IT & Defence companies
+```sql
+SELECT ci.Company_Name, cs.Sector_Name, ci.Growth_percent, cp.Performance_Grade, cs.Effect_of_covid, cs.Effect_of_Crudeprice
+FROM Company_Information ci
+JOIN Company_Sector cs ON ci.Sector = cs.Sector_id
+JOIN Company_Performance cp ON cs.Performance_Id = cp.Performance_id
+WHERE cs.Sector_Name IN ('Defence', 'IT') AND ci.Estimated_Growth > 5
+ORDER BY cs.Sector_Name ASC, ci.Estimated_Growth DESC;
+```
+
+## Findings
+
+- **Growth Risk**: Several companies are categorized as high risk due to negative growth.
+- **Sector Insights**: IT and Defence sectors show resilient companies with high estimated growth.
+- **Inflation Trends**: Sectors are affected differently by inflation; some thrive in low-inflation environments.
+- **Performance Ratings**: Sector-wide performance linked with crude oil and COVID impact gives meaningful insights.
+
+## Reports
+
+- **Risk Classification Report**
+- **Recession-Free Sector Summary**
+- **Top Sector by Growth**
+- **Inflation Impact Analysis**
+- **Company Highlights in IT & Defence**
+
+## Conclusion
+
+This SQL project simulates real-world corporate analysis using a relational database and advanced SQL techniques. It classifies risk levels, measures growth, correlates sector attributes with macroeconomic factors, and highlights top-performing companies.
+
+## Author
+
+**Golla Bhargava Teja**  
+This project is part of my SQL learning and business analytics journey.
 
 **Project Title**: Company Performance & Risk Analysis  
 **Level**: Beginner to Intermediate  
